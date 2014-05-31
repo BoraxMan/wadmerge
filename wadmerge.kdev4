@@ -1,0 +1,4 @@
+[Project]
+Name=wadmerge
+Manager=KDevCMakeManager
+VersionControl=kdevgit
