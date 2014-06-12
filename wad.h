@@ -19,81 +19,121 @@
 
 #include <list>
 #include <string>
+#include <vector>
 #include <algorithm>
+#include "wadlumpptr.h"
 
 #ifndef WAD_H
 #define WAD_H
 
-typedef enum enum_wadtypes {
-  WAD_ERROR,
-  WAD_IWAD,
-  WAD_PWAD
+
+unsigned long hash(char *str);
+int findHigherPrime(int start);
+
+
+template <typename ForwardIt>
+ForwardIt next ( ForwardIt it,
+                 typename std::iterator_traits<ForwardIt>::difference_type n = 1 )
+{
+    std::advance ( it, n );
+    return it;
+}
+
+enum flags
+{
+    F_ALLOW_DUPLICATES 	= 0x1,
+    F_DEDUP		= 0x2,
+    F_IWAD		= 0x4,
+    F_PWAD		= 0x8
+};
+
+typedef enum enum_wadtypes
+{
+    WAD_ERROR,
+    WAD_IWAD,
+    WAD_PWAD
 } wadTypes;
 
-typedef enum enum_lumptypes {
-  T_GENERAL,
-  T_F_START,
-  T_F1_START,
-  T_F2_START,
-  T_F3_START,
-  T_S_START,
-  T_P_START,
-  T_P1_START,
-  T_P2_START,
-  T_END,
-  T_MAP
+typedef enum enum_lumptypes
+{
+    T_F_START,
+    T_F1_START,
+    T_F2_START,
+    T_F3_START,
+    T_S_START,
+    T_P_START,
+    T_P1_START,
+    T_P2_START,
+    T_C_START,
+    T_END,
+    T_MAP,
+    T_GENERAL
 } lumpTypes;
 
+typedef enum enum_gametypes
+{
+  G_UNKNOWN,
+  G_DOOM, 
+  G_HERETIC = 9,
+  G_DOOM2 = 10,  // This coincides with the number of map entries in a Doom 2 map for a reason
+  G_HEXEN = 11, // This coincides with the number of map entries in a Hexen map for a reason
+} gameTypes;
+// That reason is, so that we can use the gameTypes value to advances the right number of lump entries
+// to get the next map.
 
-typedef struct struct_wadlumpdata {
-  int links; // This field is NOT exported to the Wad
-  int type;  // Neither is this.
-  int loc;
-  int lumpsize;
-  char name[8];
-  char *lumpdata;
+typedef struct struct_wadlumpdata
+{
+    lumpTypes type;  // Neither is this.
+    int loc;
+    int lumpsize;
+    char name[8];
+    WadLumpPtr lumpdata;
+    bool deduped;
+
 } wadlumpdata;
 
 
 class Wad
 {
 private:
-  int F_stack_pos;
-  int F1_stack_pos;
-  int F2_stack_pos;
-  int F3_stack_pos;
-  int S_stack_pos;
-  int P_stack_pos;
-  int P1_stack_pos;
-  int P2_stack_pos;
-  char wad_id[4];
-  int numlumps;
-  int dirloc;
-  bool iwad; // True = IWAD, false = PWAD
-  bool sorted;
-  std::list< wadlumpdata > wadlump;
-  std::list< wadlumpdata >::iterator it;
+    std::vector< int > groupEndOffsets;
+    char wad_id[4];
+    int numlumps;
+    bool iwad; // True = IWAD, false = PWAD
+    bool sorted;
+    int dirloc;
+    int hashsize;
+    gameTypes wadGameType;
 
+    std::vector< int > hasher;
+    bool hasherInitialised;
+    std::list< wadlumpdata > wadlump;
+    std::list< wadlumpdata >::iterator it;
+    gameTypes determineWadGameType();
 
 protected:
-  int updateIndexes();
-  lumpTypes getCurrentType(wadlumpdata &entry);
-  int setCurrentType(wadlumpdata &entry);
+    int updateIndexes();
+    int calcLabelOffsets();
+    lumpTypes getCurrentType ( wadlumpdata &entry );
 
-  
 public:
+    //Wad& operator=(const Wad& obj);
+    Wad ( const Wad& obj ); // no implementation
     Wad();
-    Wad(const char* filename);
+    Wad ( const char* filename );
     ~Wad();
-    int storeEntry(std::string lumpname);
-    wadlumpdata& fetchEntry(int entrynum);
-    int save(const char* filename);
-    int load(const char* filename);
-    bool mergeEntry(wadlumpdata& entry); // Returns "true" if the entry was a duplicate.
-    int getNumLumps(void);
-    int mergeWad(Wad &wad);
+    int deduplicate();
+    wadlumpdata& operator[] ( int entrynum );
+    int save ( const char* filename );
+    int load ( const char* filename );
+    bool storeEntry ( wadlumpdata& entry ); // Returns "true" if the entry was a duplicate.
+    int getNumLumps ( void );
+    int mergeWad ( Wad& wad);
     wadTypes wadType();
-    wadTypes wadType(wadTypes type);
+    void setHashSize(int hashsz);
+    wadTypes wadType ( wadTypes type );
+    gameTypes getGameType();
+
 };
 
 #endif // WAD_H
