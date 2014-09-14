@@ -17,6 +17,7 @@
  *
  */
 
+#include <stdint.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -37,7 +38,7 @@ int findHigherPrime(int start)
 
   while(1)
   {
-  for (int a = 1; a <= start; a++)
+  for (int a = 1; a <= start; ++a)
     {
       if (start % a == 0)
       {
@@ -61,7 +62,7 @@ unsigned long hash(char *str)
     unsigned long hash = 5381;
     int c;
 
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < 8; ++x)
     {
       c = *str++;
       hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
@@ -100,17 +101,16 @@ Wad::Wad ( const Wad& obj )
 
 }
 
-Wad::Wad() : numlumps ( 0 ), iwad ( false ), sorted ( false ), dirloc ( wadLumpBeginOffset ), hasherInitialised(false), hashsize(0), wadGameType(G_UNKNOWN)
+Wad::Wad() : numlumps ( 0 ), iwad ( false ), sorted ( false ), dirloc ( wadLumpBeginOffset ), hashsize(0), wadGameType(G_UNKNOWN),  hasherInitialised(false)
 {
     groupEndOffsets.resize ( numGroupTypes );
     this->wadType ( WAD_PWAD ); // Default to PWAD
 }
 
-Wad::Wad ( const char* filename ) : numlumps ( 0 ), iwad ( false ), sorted ( false ), dirloc ( wadLumpBeginOffset ), hasherInitialised(false), hashsize(0), wadGameType(G_UNKNOWN)
+Wad::Wad ( const char* filename ) : numlumps ( 0 ), iwad ( false ), sorted ( false ), dirloc ( wadLumpBeginOffset ),  hashsize(0),  wadGameType(G_UNKNOWN), hasherInitialised(false)
 {
     groupEndOffsets.resize ( numGroupTypes );
     this->load ( filename );
-
 }
 
 wadlumpdata & Wad::operator[](int entrynum)
@@ -137,11 +137,11 @@ gameTypes Wad::getGameType()
 
 int Wad::deduplicate ()
 {
-  std::list < wadlumpdata >::iterator index;
+  std::vector < wadlumpdata >::iterator index;
 
-  for (it = wadlump.begin (); it != wadlump.end (); it++)
+  for (it = wadlump.begin (); it != wadlump.end (); ++it)
   {
-    for (index = next(it); index != wadlump.end (); index++)
+    for (index = next(it); index != wadlump.end (); ++index)
     {
       if ((index->lumpsize == it->lumpsize) && (index->deduped == false) && (index->lumpsize > 0))
 	{
@@ -152,8 +152,7 @@ int Wad::deduplicate ()
 	//  std::cout << index->loc << " : " << it->loc << std::endl;
 	  index->lumpdata = it->lumpdata;
 	  index->loc = it->loc;
-	  index->deduped = true;
-	  it->deduped = true;
+	  index->deduped = it->deduped = true;
 	}
       }
     }
@@ -176,7 +175,7 @@ int Wad::mergeWad (Wad & wad)
     hasherInitialised = true;
   }
 
-  for (int x = 0; x < wad.getNumLumps(); x++)
+  for (int x = 0; x < wad.getNumLumps(); ++x)
     {
       bool dup = this->storeEntry (wad[x]);
       if (dup == true)
@@ -198,16 +197,17 @@ int Wad::mergeWad (Wad & wad)
 gameTypes Wad::determineWadGameType ()
 { // We need this to know the map format.
 
-  for (std::list < wadlumpdata >::iterator k = wadlump.begin(); k != wadlump.end(); k++)
+  for (std::vector < wadlumpdata >::iterator it_lump = wadlump.begin(); it_lump != wadlump.end(); ++it_lump)
   {
-    if (k->lumpsize <= 32)
+    if (it_lump->lumpsize <= 32)
     {
-      if ((wadGameType == G_UNKNOWN) && (strncmp(k->name, "MAP", 3) == 0))
+      if ((wadGameType == G_UNKNOWN) && (strncmp(it_lump->name, "MAP", 3) == 0))
       {
-	std::advance(k, (mapEntries + 1));
-	std::cout << k->name << " : " << maplumpnames[10] << std::endl;
-	if (strncmp(k->name, maplumpnames[10], 8) == 0)
+	if (strncmp(it_lump->name, maplumpnames[10], 8) == 0)
 	{
+	      // maplumpnames[10] = BEHAVIOR
+	      // As this only appears in HEXEN, if the 10th one after the MAP entry is BEHAVIOR
+	      // then we've established that it is a Hexen map and not a Doom 2 one.
 	  wadGameType = G_HEXEN;
 	}
 	else
@@ -217,10 +217,9 @@ gameTypes Wad::determineWadGameType ()
       }
       if (wadGameType == G_UNKNOWN) 
       {
-	if ((k->name[0] == 'E') && (k->name[2] == 'M'))
+	if ((it_lump->name[0] == 'E') && (it_lump->name[2] == 'M'))
 	{
-	std::advance(k, (mapEntries + 1));
-	std::cout << k->name << " : " << maplumpnames[10] << std::endl;
+	  // This also applies to HERETIC and Ultimate Doom
 	  wadGameType = G_DOOM;
 	}
       }
@@ -237,7 +236,7 @@ bool Wad::storeEntry ( wadlumpdata& entry )
   int hashValue;
   bool collision = false;
 
-  for ( int z = 0; z <= ( mapEntries - 1 ); z++ )
+  for ( int z = 0; z <= ( mapEntries - 1 ); ++z )
   {
     if ( strncmp ( entry.name, maplumpnames[z], strlen ( maplumpnames[z] ) ) == 0 )
       ismap = true;
@@ -250,7 +249,7 @@ bool Wad::storeEntry ( wadlumpdata& entry )
     //std::cout << "Hashvalue = " << hashValue << std::endl;
     if (hasher[hashValue] == 0)
     {
-      duplicate == false;
+      duplicate = false;
       hasher[hashValue] = 1;
     }
     else
@@ -262,7 +261,7 @@ bool Wad::storeEntry ( wadlumpdata& entry )
   if ((collision == true) || (hashsize == 0))
   { // If its a collision, or we haven't initialised the hash table, do a slow search.
 
-    for ( it = wadlump.begin(); it != wadlump.end(); it++ )
+    for ( it = wadlump.begin(); it != wadlump.end(); ++it )
     {
       if ( ( strncmp ( entry.name, it->name, lumpNameLength ) == 0 ) && ( ismap == false ) )
 	duplicate = true;  // So we've determined its a duplicate, for real..
@@ -280,7 +279,7 @@ bool Wad::storeEntry ( wadlumpdata& entry )
       groupEndOffsets[entry.type]++; // Move end of segment up one space, as we've
       // inserted an entry before it.
 
-      for ( int x = 0; x < numGroupTypes; x++ )
+      for ( int x = 0; x < numGroupTypes; ++x )
       {
         // All end of segment marker entries  this, also get moved up one space .
       if ( groupEndOffsets[x] > groupEndOffsets[entry.type] )
@@ -309,7 +308,7 @@ int Wad::updateIndexes()
     numlumps = wadlump.size();
     dirloc = wadLumpBeginOffset; // We start after the WAD header.
     
-    for ( it = wadlump.begin(); it != wadlump.end(); it++ )
+    for ( it = wadlump.begin(); it != wadlump.end(); ++it )
     {
         it->loc = dirloc;
 	if (it->deduped == false)
@@ -318,92 +317,108 @@ int Wad::updateIndexes()
     return dirloc;
 }
 
-int Wad::save (const char *filename)
-{
+int Wad::save (const char *filename) throw (std::string)
+{  
   std::ofstream fout;
-  size_t before;
-  size_t written;
-  int ccc = 0;
-
-  fout.open (filename, std::ios_base::binary);
-  if (!fout.is_open ())
-    {
-      return 1;
-    }
+  fout.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  
+  try
+  {
+    fout.open (filename, std::ios_base::binary);
+  }
+  catch(std::ifstream::failure e)
+  {
+    throw(std::string("Error saving file."));
+  }
 
   if (sorted == false)
     this->updateIndexes ();
 
   int z = wadlump.size ();
-  //std::cout << "Wadlump size :" << wadlump.size() << std::endl;
-  fout.write (reinterpret_cast < char *>(wad_id), 4);
-  fout.write (reinterpret_cast < char *>(&z), sizeof (int32_t));
-  fout.write (reinterpret_cast < char *>(&dirloc), sizeof (int32_t));
+  
+  try
+  {
+    fout.write (reinterpret_cast < char *>(wad_id), 4);
+    fout.write (reinterpret_cast < char *>(&z), sizeof (int32_t));
+    fout.write (reinterpret_cast < char *>(&dirloc), sizeof (int32_t));
 
-  for (it = wadlump.begin (); it != wadlump.end (); it++)
+    for (it = wadlump.begin (); it != wadlump.end (); ++it)
     {
       // Write the data
       fout.seekp (it->loc, std::ios::beg);
       if (it->deduped == false)
 	fout.write (reinterpret_cast < char *>(&(*it->lumpdata)), it->lumpsize);
     }
-  // Now write the index
-  fout.seekp (dirloc, std::ios::beg);
+    // Now write the index
+    fout.seekp (dirloc, std::ios::beg);
 
-  for (it = wadlump.begin (); it != wadlump.end (); it++)
+    for (it = wadlump.begin (); it != wadlump.end (); ++it)
     {
       fout.write (reinterpret_cast < char *>(&it->loc), sizeof (int32_t));
       fout.write (reinterpret_cast < char *>(&it->lumpsize), sizeof (int32_t));
       fout.write (reinterpret_cast < char *>(&it->name), lumpNameLength);
     }
-
+  } // End of try
+  catch(std::ifstream::failure e)
+  {
+    throw(std::string("Error saving file."));
+    fout.close();
+  }
   fout.close ();
   return 0;
 }
 
-int Wad::load ( const char* filename )
+int Wad::load ( const char* filename ) throw (std::string)
 {
     std::ifstream fin;
+    fin.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     wadlumpdata wadindex;
-
-    fin.open ( filename, std::ios_base::binary );
-
-    if ( !fin.is_open() )
+    
+    try
     {
-        return -1;
+      fin.open ( filename, std::ios_base::binary );
+    }
+    catch(std::istream::failure e)
+    {
+      throw(std::string("Error loading file."));
     }
 
-    fin.read ( reinterpret_cast<char *> ( wad_id ), 4 );
-    fin.read ( reinterpret_cast<char *> ( &numlumps ), sizeof ( int32_t ) );
-    fin.read ( reinterpret_cast<char *> ( &dirloc ), sizeof ( int32_t ) );
-    fin.seekg ( dirloc, std::ios::beg );
-
-    for ( int count = 0; count < numlumps; count++ )
+    try
     {
-        // We read the lump information.
-        fin.read ( reinterpret_cast<char *> ( &wadindex.loc ), sizeof ( int32_t ) );
-        fin.read ( reinterpret_cast<char *> ( &wadindex.lumpsize ), sizeof ( int32_t ) );
-        fin.read ( reinterpret_cast<char *> ( &wadindex.name ), lumpNameLength );
+      fin.read ( reinterpret_cast<char *> ( wad_id ), 4 );
+      fin.read ( reinterpret_cast<char *> ( &numlumps ), sizeof ( int32_t ) );
+      fin.read ( reinterpret_cast<char *> ( &dirloc ), sizeof ( int32_t ) );
+      fin.seekg ( dirloc, std::ios::beg );
+
+      wadlump.reserve(numlumps);
+    
+      for ( int count = 0; count < numlumps; ++count )
+      {
+	// We read the lump information.
+	fin.read ( reinterpret_cast<char *> ( &wadindex.loc ), sizeof ( int32_t ) );
+	fin.read ( reinterpret_cast<char *> ( &wadindex.lumpsize ), sizeof ( int32_t ) );
+	fin.read ( reinterpret_cast<char *> ( &wadindex.name ), lumpNameLength );
 	wadindex.deduped = false;
-        wadindex.type = this->getCurrentType ( wadindex );
-        wadlump.push_back ( wadindex );
-    }
-
-    // Now we will read the lump data.
-    for ( it = wadlump.begin(); it != wadlump.end(); it++ )
-    {
-        fin.seekg ( it->loc, std::ios::beg );
-        it->lumpdata.assign(new char[it->lumpsize]);
-        fin.read ( reinterpret_cast<char *> (&(*it->lumpdata)), it->lumpsize );
-	
+	wadindex.type = this->getCurrentType ( wadindex );
+	wadlump.push_back ( wadindex );
+      }
+  
+      // Now we will read the lump data.
+      for ( it = wadlump.begin(); it != wadlump.end(); ++it )
+      {
+	fin.seekg ( it->loc, std::ios::beg );
+	it->lumpdata.assign(new unsigned char[it->lumpsize]);
+	fin.read ( reinterpret_cast<char *> (&(*it->lumpdata)), it->lumpsize );
         //std::cout << "INPUT POS" << &it->lumpdata << std::endl;
-        if ( fin.gcount() != it->lumpsize )
-        {
-            std::cout << "Read error!" << std::endl;
-            return -1;
-        }
-    }
+      }
 
+    } // End of try block
+    catch(std::istream::failure e)
+    {
+      throw(std::string("Error reading file."));
+      fin.close();
+    }
+    
     this->calcLabelOffsets();  // Calculate where the end group tags are.
     sorted = true;
     this->wadType();  // This fetches the WAD type (PWAD/IWAD), but also sets
@@ -414,14 +429,13 @@ int Wad::load ( const char* filename )
     return 0;
 }
 
-int
-Wad::calcLabelOffsets ()
+int Wad::calcLabelOffsets ()
 {
   lumpTypes thisType = T_GENERAL;
   lumpTypes currType = T_GENERAL;
   int count = 0;
 
-  for (it = wadlump.begin (); it != wadlump.end (); it++)
+  for (it = wadlump.begin (); it != wadlump.end (); ++it)
     {
       currType = thisType;
       thisType = it->type;
@@ -437,14 +451,13 @@ Wad::calcLabelOffsets ()
 	      groupEndOffsets[currType] = count;
 	    }
 	}
-      count++;
+      ++count;
     }
   return 0;
 }
 
 
-lumpTypes
-Wad::getCurrentType (wadlumpdata & entry)
+lumpTypes Wad::getCurrentType (wadlumpdata & entry)
 {
   static lumpTypes currenttype = T_GENERAL;
 

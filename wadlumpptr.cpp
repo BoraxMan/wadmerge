@@ -36,14 +36,14 @@ WadLumpPtr::WadLumpPtr() : lumpdata(0), reference(0)
 
 }
 
-void WadLumpPtr::assign ( char* pValue )
+void WadLumpPtr::assign (unsigned char* pValue )
 {
   //std::cout << "Lumpdata " << lumpdata << "pValue " << pValue << std::endl;
   lumpdata = pValue;
   reference->addRef();
 }
 
-WadLumpPtr::WadLumpPtr(char* pValue) : lumpdata(pValue), reference(0)
+WadLumpPtr::WadLumpPtr(unsigned char* pValue) : lumpdata(pValue), reference(0)
 {
   reference = new ReferenceCount();
   reference->addRef();
@@ -64,12 +64,12 @@ WadLumpPtr::~WadLumpPtr()
   }
 }
 
-char& WadLumpPtr::operator*()
+unsigned char& WadLumpPtr::operator*()
 {
   return *lumpdata;
 }
 
-char* WadLumpPtr::operator->()
+unsigned char* WadLumpPtr::operator->()
 {
   return lumpdata;
 }
@@ -92,7 +92,7 @@ WadLumpPtr& WadLumpPtr::operator= ( const WadLumpPtr& other )
 }
 
 
-WadLumpPtr& WadLumpPtr::operator= ( char* pValue)
+WadLumpPtr& WadLumpPtr::operator= (unsigned char* pValue)
 {
   
   lumpdata = pValue;
@@ -104,7 +104,7 @@ WadLumpPtr& WadLumpPtr::operator= ( char* pValue)
 
 bool WadLumpPtr::operator== ( const WadLumpPtr& other )
 {
-  if (lumpdata = other.lumpdata)
+  if (lumpdata == other.lumpdata)
     return true;
   else
     return false;

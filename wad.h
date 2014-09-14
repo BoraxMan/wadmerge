@@ -17,7 +17,6 @@
  *
  */
 
-#include <list>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -83,12 +82,12 @@ typedef enum enum_gametypes
 
 typedef struct struct_wadlumpdata
 {
-    lumpTypes type;  // Neither is this.
+    lumpTypes type;  // This is not written to the wad.
     int loc;
     int lumpsize;
     char name[8];
     WadLumpPtr lumpdata;
-    bool deduped;
+    bool deduped; // Neither is this.
 
 } wadlumpdata;
 
@@ -107,8 +106,8 @@ private:
 
     std::vector< int > hasher;
     bool hasherInitialised;
-    std::list< wadlumpdata > wadlump;
-    std::list< wadlumpdata >::iterator it;
+    std::vector< wadlumpdata > wadlump;
+    std::vector< wadlumpdata >::iterator it;
     gameTypes determineWadGameType();
 
 protected:
@@ -124,8 +123,8 @@ public:
     ~Wad();
     int deduplicate();
     wadlumpdata& operator[] ( int entrynum );
-    int save ( const char* filename );
-    int load ( const char* filename );
+    int save ( const char* filename ) throw (std::string);
+    int load ( const char* filename ) throw (std::string);
     bool storeEntry ( wadlumpdata& entry ); // Returns "true" if the entry was a duplicate.
     int getNumLumps ( void );
     int mergeWad ( Wad& wad);

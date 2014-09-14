@@ -35,19 +35,19 @@ class ReferenceCount
 class WadLumpPtr
 {
   private:
-    char* lumpdata;
+    unsigned char* lumpdata;
     ReferenceCount* reference;
       
   public:
     WadLumpPtr();
-    WadLumpPtr(char* pValue);
+    WadLumpPtr(unsigned char* pValue);
     WadLumpPtr(const WadLumpPtr& other);
     ~WadLumpPtr();
-    char& operator* ();
-    char* operator-> ();
-    void assign(char *pValue);
+    unsigned char& operator* ();
+    unsigned char* operator-> ();
+    void assign(unsigned char *pValue);
     WadLumpPtr& operator= (const WadLumpPtr& other);
-    WadLumpPtr& operator= ( char* pValue);
+    WadLumpPtr& operator= (unsigned char* pValue);
     bool operator== (const WadLumpPtr& other);
     bool operator!= (const WadLumpPtr& other);
 };
