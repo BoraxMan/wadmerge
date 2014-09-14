@@ -1,4 +1,4 @@
-#define VERSION "0.8.1"
+#define VERSION "0.8.0"
 /*
  * Wadmerge: Merges WAD files used for Doom/Doom2/Hexen/Heretic
  * Copyright (C) 2014  Dennis Katsonis dennisk@netspace.net.au
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 	  catch(std::string err)
 	  {
 	    std::cout << err << " : " << optarg << std::endl; 
-	    return 1;
+	    exit(1);
 	  }
 	  break;
 
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
   catch(std::string err)
   {
     std::cout << err << " : " << optarg << std::endl; 
-    return 1;
+    exit(1);
   }
   
   return 0;

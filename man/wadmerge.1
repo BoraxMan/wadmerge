@@ -1,0 +1,48 @@
+.\" Manpage for wadmerge.
+.\" Contact dennisk@netspace.net.au.
+.TH "man" "8" "14 September 2014" "0.8.1" "wadmerge man page"
+.SH "NAME"
+wadmerge \- Merges WAD file for Doom engine games.
+.SH "SYNOPSIS"
+wadmerge [OPTIONS] 
+.I [FILES]
+.SH "DESCRIPTION"
+Merges .WAD files from Doom engine games, such as
+Doom, Doom2, Hexen and Heretic.
+
+.SH "OPTIONS"
+.IP \-V
+Print licence
+.IP \-d
+Allow duplicate lumps.
+.IP \-i
+Input wad filename.
+.IP \-o
+Output wad filename.
+.IP \-P
+Output wad is a PWAD.
+.IP \-I
+Output wad is an IWAD.
+.IP \-c
+Compact (deduplicate).  Store multiple lumps which have the same data once per wad.
+
+.SH "EXAMPLES"
+wadmerge \-i map01.wad \-i graphics.wad \-o megawad.wad	;Merges map01 and graphics.wad into megawad.wad.
+
+.SH "NOTES"
+
+By default, if the wads you are merging double up on lumps, wadmerge will not include them all, but just the first one.  For example, if you merge multiple wads each with a DSPOSSIT entry, only the first entry will make it into the final wad.
+
+Deduplication means lumps which have different names, but the same data, are
+
+
+.SH "LIMITATIONS"
+
+This is still 'beta', so ensure that the output wad file is OK, before you remove the input wad files.
+
+
+.SH "BUGS"
+No known bugs.
+
+.SH "AUTHOR"
+Dennis Katsonis (dennisk@netspace.net.au)
