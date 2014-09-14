@@ -18,7 +18,7 @@ Doom, Doom2, Hexen and Heretic.
 %setup
 
 %build
-cmake . -DCMAKE_INSTALL_PREFIX=/usr
+cmake . -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
 make
 
 %install
