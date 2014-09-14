@@ -1,0 +1,36 @@
+Summary: Merges WAD file for Doom engine games.
+Name: wadmerge
+Version: 0.8.0
+Release: 1
+License: GPL
+Group: System
+Source: http://dennisk.customer.netspace.net.au/wadmerge/wadmerge-0.8.0.tar.gz
+URL: http://dennisk.customer.netspace.net.au/wadmerge.html
+Distribution: Fedora
+Vendor: DK Soft
+Packager: Dennis Katsonis <dennisk@netspace.net.au>
+
+%description
+Merges .WAD files from Doom engine games, such as
+Doom, Doom2, Hexen and Heretic.
+
+%prep
+%setup
+
+%build
+cmake . -DCMAKE_INSTALL_PREFIX=/usr
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,-)
+%{_bindir}/*
+%{_mandir}/man1/*
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
