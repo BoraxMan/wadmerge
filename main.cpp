@@ -1,4 +1,4 @@
-#define VERSION "0.8.0"
+#define VERSION "0.8.1"
 /*
  * Wadmerge: Merges WAD files used for Doom/Doom2/Hexen/Heretic
  * Copyright (C) 2014  Dennis Katsonis dennisk@netspace.net.au
