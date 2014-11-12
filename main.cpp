@@ -1,4 +1,4 @@
-#define VERSION "0.8.1"
+#define VERSION "0.9.0"
 /*
  * Wadmerge: Merges WAD files used for Doom/Doom2/Hexen/Heretic
  * Copyright (C) 2014  Dennis Katsonis dennisk@netspace.net.au
@@ -65,7 +65,7 @@ int main (int argc, char **argv)
   int optch;
   int optimalHashSize = 0;
   std::vector < Wad > inputfiles;
-  std::vector < Wad >::iterator it_inputfiles;
+  std::vector < Wad >::const_iterator it_inputfiles;
   Wad output;
   std::string outputfile = "invalid";
   unsigned char flags = 0;
@@ -158,7 +158,7 @@ int main (int argc, char **argv)
 	output.wadType(WAD_IWAD);
       }
     }
-    output.mergeWad(*c);
+    output.mergeWad(*c, flags & F_ALLOW_DUPLICATES);
   }
 
   if (flags & F_IWAD) // If the user has selected IWAD or PWAD, override.
@@ -167,6 +167,7 @@ int main (int argc, char **argv)
     output.wadType( WAD_PWAD);
   
   std::cout << "Writing " << outputfile << "..." << std::endl;  
+
   if (flags & F_DEDUP)
   {
     std::cout << "Deduplicating..." << std::endl;
@@ -181,6 +182,7 @@ int main (int argc, char **argv)
     std::cout << err << " : " << optarg << std::endl; 
     exit(1);
   }
+  output.stats();
   
   return 0;
 }

@@ -102,32 +102,34 @@ private:
     bool sorted;
     int dirloc;
     int hashsize;
+    int duplicatesFound; // Defaults to zero, increments each time a lump
+			// was added which is a duplicate of a previous one.
+    int numDeduplicated;
     gameTypes wadGameType;
 
     std::vector< int > hasher;
     bool hasherInitialised;
     std::vector< wadlumpdata > wadlump;
-    std::vector< wadlumpdata >::iterator it;
     gameTypes determineWadGameType();
 
-protected:
     int updateIndexes();
     int calcLabelOffsets();
-    lumpTypes getCurrentType ( wadlumpdata &entry );
+    lumpTypes getCurrentType ( const wadlumpdata &entry ) throw();
 
 public:
     //Wad& operator=(const Wad& obj);
-    Wad ( const Wad& obj ); // no implementation
+    Wad ( const Wad& obj );
     Wad();
     Wad ( const char* filename );
     ~Wad();
     int deduplicate();
-    wadlumpdata& operator[] ( int entrynum );
+    wadlumpdata& operator[] ( int entrynum ) throw();
     int save ( const char* filename ) throw (std::string);
     int load ( const char* filename ) throw (std::string);
-    bool storeEntry ( wadlumpdata& entry ); // Returns "true" if the entry was a duplicate.
+    bool storeEntry ( const wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
     int getNumLumps ( void );
-    int mergeWad ( Wad& wad);
+    void stats(void);
+    int mergeWad ( Wad& wad, bool allowDuplicates) throw();
     wadTypes wadType();
     void setHashSize(int hashsz);
     wadTypes wadType ( wadTypes type );
