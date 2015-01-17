@@ -20,23 +20,21 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "wadlumpptr.h"
+#include <memory>
+
 
 #ifndef WAD_H
 #define WAD_H
 
+template<typename T> 
+std::shared_ptr<T> make_shared_array(size_t size)
+{
+   return std::shared_ptr<T>(new T[size], std::default_delete<T[]>());
+}
+
 
 unsigned long hash(char *str);
 int findHigherPrime(int start);
-
-
-template <typename ForwardIt>
-ForwardIt next ( ForwardIt it,
-                 typename std::iterator_traits<ForwardIt>::difference_type n = 1 )
-{
-    std::advance ( it, n );
-    return it;
-}
 
 enum flags
 {
@@ -86,7 +84,7 @@ typedef struct struct_wadlumpdata
     int loc;
     int lumpsize;
     char name[8];
-    WadLumpPtr lumpdata;
+    std::shared_ptr<char> lumpdata;
     bool deduped; // Neither is this.
 
 } wadlumpdata;
@@ -113,22 +111,23 @@ private:
     gameTypes determineWadGameType();
 
     int updateIndexes();
-    int calcLabelOffsets();
-    lumpTypes getCurrentType ( const wadlumpdata &entry ) throw();
+    int calcLabelOffsets() throw();
+    lumpTypes getCurrentType ( const wadlumpdata &entry ) const throw();
 
 public:
     //Wad& operator=(const Wad& obj);
     Wad ( const Wad& obj );
+    Wad ( Wad&& obj );
     Wad();
     Wad ( const char* filename );
     ~Wad();
     int deduplicate();
-    wadlumpdata& operator[] ( int entrynum ) throw();
+    wadlumpdata& operator[] ( int entrynum ) throw(std::out_of_range);
     int save ( const char* filename ) throw (std::string);
     int load ( const char* filename ) throw (std::string);
     bool storeEntry ( const wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
-    int getNumLumps ( void );
-    void stats(void);
+    int getNumLumps ( void ) const;
+    void stats(void) const;
     int mergeWad ( Wad& wad, bool allowDuplicates) throw();
     wadTypes wadType();
     void setHashSize(int hashsz);
