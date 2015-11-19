@@ -1,6 +1,6 @@
 .\" Manpage for wadmerge.
 .\" Contact dennisk@netspace.net.au.
-.TH "man" "8" "12 November 2014" "0.9.0" "wadmerge man page"
+.TH "man" "8" "12 November 2014" "1.0.0" "wadmerge man page"
 .SH "NAME"
 wadmerge \- Merges WAD file for Doom engine games.
 .SH "SYNOPSIS"
@@ -33,16 +33,15 @@ wadmerge \-i map01.wad \-i graphics.wad \-o megawad.wad	;Merges map01 and graphi
 
 By default, if the wads you are merging double up on lumps, wadmerge will not include them all, but just the first one.  For example, if you merge multiple wads each with a DSPOSSIT entry, only the first entry will make it into the final wad.
 
-Deduplication means lumps which have different names, but the same data, are
+Deduplication means lumps which have different names, but the same data will share the same copy of data.  This can reduce the size of the WAD if there are multiple entries which have the same data.  Please note that this is not recommended for WADs which are still being edited or modified.
 
 
 .SH "LIMITATIONS"
 
-This is still 'beta', so ensure that the output wad file is OK, before you remove the input wad files.
 
 
 .SH "BUGS"
-No known bugs.
+No known bugs.  Please report any you see.
 
 .SH "AUTHOR"
 Dennis Katsonis (dennisk@netspace.net.au)

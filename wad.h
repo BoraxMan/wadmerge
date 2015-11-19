@@ -18,41 +18,40 @@
  */
 
 #include <string>
+#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <memory>
-
+#include <array>
+#include <cstdalign>
 
 #ifndef WAD_H
 #define WAD_H
 
-template<typename T> 
-std::shared_ptr<T> make_shared_array(size_t size)
+template<typename T>
+std::shared_ptr<T> make_shared_array ( size_t size )
 {
-   return std::shared_ptr<T>(new T[size], std::default_delete<T[]>());
+    return std::shared_ptr<T> (new  T[size], std::default_delete<T[]>() );
 }
 
 
-unsigned long hash(char *str);
-int findHigherPrime(int start);
+unsigned long hash ( char *str );
+int findHigherPrime ( int start );
 
-enum flags
-{
+enum flags {
     F_ALLOW_DUPLICATES 	= 0x1,
     F_DEDUP		= 0x2,
     F_IWAD		= 0x4,
     F_PWAD		= 0x8
 };
 
-typedef enum enum_wadtypes
-{
+typedef enum enum_wadtypes {
     WAD_ERROR,
     WAD_IWAD,
     WAD_PWAD
 } wadTypes;
 
-typedef enum enum_lumptypes
-{
+typedef enum enum_lumptypes {
     T_F_START,
     T_F1_START,
     T_F2_START,
@@ -67,23 +66,21 @@ typedef enum enum_lumptypes
     T_GENERAL
 } lumpTypes;
 
-typedef enum enum_gametypes
-{
-  G_UNKNOWN,
-  G_DOOM, 
-  G_HERETIC = 9,
-  G_DOOM2 = 10,  // This coincides with the number of map entries in a Doom 2 map for a reason
-  G_HEXEN = 11, // This coincides with the number of map entries in a Hexen map for a reason
+typedef enum enum_gametypes {
+    G_UNKNOWN,
+    G_DOOM,
+    G_HERETIC = 9,
+    G_DOOM2 = 10,  // This coincides with the number of map entries in a Doom 2 map for a reason
+    G_HEXEN = 11, // This coincides with the number of map entries in a Hexen map for a reason
 } gameTypes;
 // That reason is, so that we can use the gameTypes value to advances the right number of lump entries
 // to get the next map.
 
-typedef struct struct_wadlumpdata
-{
+typedef struct struct_wadlumpdata {
     lumpTypes type;  // This is not written to the wad.
     int loc;
     int lumpsize;
-    char name[8];
+    std::array<char, 8> name;
     std::shared_ptr<char> lumpdata;
     bool deduped; // Neither is this.
 
@@ -94,14 +91,15 @@ class Wad
 {
 private:
     std::vector< int > groupEndOffsets;
-    char wad_id[4];
-    int numlumps;
+    std::array<char, 4> wad_id;
+    unsigned int numlumps;
     bool iwad; // True = IWAD, false = PWAD
+    wadTypes type;
     bool sorted;
     int dirloc;
     int hashsize;
     int duplicatesFound; // Defaults to zero, increments each time a lump
-			// was added which is a duplicate of a previous one.
+    // was added which is a duplicate of a previous one.
     int numDeduplicated;
     gameTypes wadGameType;
 
@@ -122,15 +120,15 @@ public:
     Wad ( const char* filename );
     ~Wad();
     int deduplicate();
-    wadlumpdata& operator[] ( int entrynum ) throw(std::out_of_range);
-    int save ( const char* filename ) throw (std::string);
-    int load ( const char* filename ) throw (std::string);
+    wadlumpdata& operator[] ( int entrynum ) throw ( std::out_of_range );
+    int save ( const char* filename ) throw ( std::string );
+    int load ( const char* filename ) throw ( std::string );
     bool storeEntry ( const wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
-    int getNumLumps ( void ) const;
-    void stats(void) const;
-    int mergeWad ( Wad& wad, bool allowDuplicates) throw();
+    unsigned int getNumLumps ( void ) const;
+    void stats ( void ) const;
+    int mergeWad ( Wad& wad, bool allowDuplicates ) throw();
     wadTypes wadType();
-    void setHashSize(int hashsz);
+    void setHashSize ( int hashsz );
     wadTypes wadType ( wadTypes type );
     gameTypes getGameType();
 
