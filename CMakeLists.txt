@@ -8,8 +8,9 @@ INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/man1 DESTINATION share/man)
 cmake_minimum_required (VERSION 2.6)
 
 # The version number.
-set (wadmerge_VERSION_MAJOR 0)
-set (wadmerge_VERSION_MINOR 9)
+set (wadmerge_VERSION 1.0.0)
+configure_file(version.h.in ${CMAKE_SOURCE_DIR}/version.h)
+configure_file(wadmerge.spec.in ${CMAKE_SOURCE_DIR}/wadmerge.spec)
 
 set(MINGW_PREFIX "i686-w64-mingw32-")
  

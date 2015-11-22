@@ -1,4 +1,3 @@
-#define VERSION "1.0.0"
 /*
  * Wadmerge: Merges WAD files used for Doom/Doom2/Hexen/Heretic
  * Copyright (C) 2014  Dennis Katsonis dennisk@netspace.net.au
@@ -32,6 +31,7 @@
 
 #include <fstream>
 #include "wad.h"
+#include "version.h"
 
 
 void printLicense ( void )
