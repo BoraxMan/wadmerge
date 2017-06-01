@@ -76,15 +76,23 @@ typedef enum enum_gametypes {
 // That reason is, so that we can use the gameTypes value to advances the right number of lump entries
 // to get the next map.
 
-typedef struct struct_wadlumpdata {
+class Wadlumpdata {
+  public:
+    Wadlumpdata();
     lumpTypes type;  // This is not written to the wad.
-    int loc;
+    int getLocation();
+    void setLocation( int loc );
+    void setLocation( Wadlumpdata *p );
     int lumpsize;
     std::array<char, 8> name;
     std::shared_ptr<char> lumpdata;
     bool deduped; // Neither is this.
+  private:
+    int location;
+    Wadlumpdata *ptr; // Pointer to original data, if deduplicated.
 
-} wadlumpdata;
+  
+};
 
 
 class Wad
@@ -105,12 +113,12 @@ private:
 
     std::vector< int > hasher;
     bool hasherInitialised;
-    std::vector< wadlumpdata > wadlump;
+    std::vector< Wadlumpdata > wadlump;
     gameTypes determineWadGameType();
 
     int updateIndexes();
     int calcLabelOffsets() throw();
-    lumpTypes getCurrentType ( const wadlumpdata &entry ) const throw();
+    lumpTypes getCurrentType ( const Wadlumpdata &entry ) const throw();
 
 public:
     //Wad& operator=(const Wad& obj);
@@ -120,10 +128,10 @@ public:
     Wad ( const char* filename );
     ~Wad();
     int deduplicate();
-    wadlumpdata& operator[] ( int entrynum ) throw ( std::out_of_range );
+    Wadlumpdata& operator[] ( int entrynum ) throw ( std::out_of_range );
     int save ( const char* filename ) throw ( std::string );
     int load ( const char* filename ) throw ( std::string );
-    bool storeEntry ( const wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
+    bool storeEntry ( const Wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
     unsigned int getNumLumps ( void ) const;
     void stats ( void ) const;
     int mergeWad ( Wad& wad, bool allowDuplicates ) throw();
