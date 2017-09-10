@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <cstdalign>
 
 #ifndef WAD_H
 #define WAD_H
