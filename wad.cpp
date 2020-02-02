@@ -220,10 +220,8 @@ int Wad::mergeWad ( Wad& wad, bool allowDuplicates )
                 x += mapEntries;
                 duplicatesFound += ( mapEntries + 1 );
             } else if ( std::equal ( ( wad[x] ).name.begin(), ( wad[x] ).name.begin() + 6, "GL_MAP" ) ) { 
-              std::cout << "GL DOOM2" << std::endl;
                 x += glMapEntries;
             } else if ( std::equal ( ( wad[x] ).name.begin(), ( wad[x] ).name.begin() + 4, "GL_E" ) && ( ( wad[x] ).name[5] == 'M' ) )  {
-              std::cout << "GL DOOM" << std::endl;
                 x += glMapEntries;
             } else {
                 ++duplicatesFound;
