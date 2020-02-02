@@ -2,7 +2,7 @@ project(wadmerge)
 
 add_executable(wadmerge wad.cpp main.cpp)
 set (PACKAGE wadmerge)
-set (VERSION 1.0.1)
+set (VERSION 1.0.2)
 
 install(TARGETS wadmerge RUNTIME DESTINATION bin)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/man1/ DESTINATION share/man/man1)
