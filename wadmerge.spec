@@ -1,10 +1,10 @@
 Summary: Merges WAD file for Doom engine games.
 Name: wadmerge
-Version: 1.0.1
+Version: 1.0.2
 Release: 1
 License: GPL
 Group: System
-Source: http://dennisk.customer.netspace.net.au/wadmerge/wadmerge-1.0.1.tar.gz
+Source: http://dennisk.customer.netspace.net.au/wadmerge/wadmerge-1.0.2.tar.gz
 URL: http://dennisk.customer.netspace.net.au/wadmerge.html
 Distribution: Fedora
 Vendor: DK Soft
