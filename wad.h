@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <cstdalign>
+//#include <cstdalign>
 
 #ifndef WAD_H
 #define WAD_H
@@ -117,8 +117,8 @@ private:
     gameTypes determineWadGameType();
 
     int updateIndexes();
-    int calcLabelOffsets() throw();
-    lumpTypes getCurrentType ( const Wadlumpdata &entry ) const throw();
+    int calcLabelOffsets();
+    lumpTypes getCurrentType ( const Wadlumpdata &entry );
 
 public:
     //Wad& operator=(const Wad& obj);
@@ -128,13 +128,13 @@ public:
     Wad ( const char* filename );
     ~Wad();
     int deduplicate();
-    Wadlumpdata& operator[] ( int entrynum ) throw ( std::out_of_range );
-    int save ( const char* filename ) throw ( std::string );
-    int load ( const char* filename ) throw ( std::string );
-    bool storeEntry ( const Wadlumpdata& entry, bool allowDuplicates ) throw(); // Returns "true" if the entry was a duplicate.
+    Wadlumpdata& operator[] ( int entrynum );
+    int save ( const char* filename );
+    int load ( const char* filename );
+    bool storeEntry ( const Wadlumpdata& entry, bool allowDuplicates ); // Returns "true" if the entry was a duplicate.
     unsigned int getNumLumps ( void ) const;
     void stats ( void ) const;
-    int mergeWad ( Wad& wad, bool allowDuplicates ) throw();
+    int mergeWad ( Wad& wad, bool allowDuplicates );
     wadTypes wadType();
     void setHashSize ( int hashsz );
     wadTypes wadType ( wadTypes type );

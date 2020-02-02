@@ -124,7 +124,7 @@ Wad::Wad ( const char* filename ) : numlumps ( 0 ), type ( WAD_PWAD ), sorted ( 
     this->load ( filename );
 }
 
-Wadlumpdata & Wad::operator[] ( int entrynum ) throw ( std::out_of_range )
+Wadlumpdata & Wad::operator[] ( int entrynum )
 {
     if ( sorted == false ) {
         this->updateIndexes ();
@@ -198,7 +198,7 @@ unsigned int Wad::getNumLumps ( void ) const
     return wadlump.size();
 }
 
-int Wad::mergeWad ( Wad& wad, bool allowDuplicates ) throw()
+int Wad::mergeWad ( Wad& wad, bool allowDuplicates )
 {
 
     if ( ( hashsize != 0 ) && ( hasherInitialised == false ) ) {
@@ -267,7 +267,7 @@ gameTypes Wad::determineWadGameType ()
 }
 
 
-bool Wad::storeEntry ( const Wadlumpdata& entry, bool allowDuplicates ) throw()
+bool Wad::storeEntry ( const Wadlumpdata& entry, bool allowDuplicates )
 {
     bool ismap = false;
     bool duplicate = false;
@@ -359,7 +359,7 @@ int Wad::updateIndexes()
     return dirloc;
 }
 
-int Wad::save ( const char *filename ) throw ( std::string )
+int Wad::save ( const char *filename )
 {
     std::vector< Wadlumpdata >::iterator it;
     std::ofstream fout;
@@ -409,7 +409,7 @@ int Wad::save ( const char *filename ) throw ( std::string )
 
 
 
-int Wad::load ( const char* filename ) throw ( std::string )
+int Wad::load ( const char* filename )
 {
     std::ifstream fin;
     fin.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
@@ -466,7 +466,7 @@ int Wad::load ( const char* filename ) throw ( std::string )
     return 0;
 }
 
-int Wad::calcLabelOffsets () throw()
+int Wad::calcLabelOffsets ()
 {
     lumpTypes thisType = T_GENERAL;
     lumpTypes currType = T_GENERAL;
@@ -491,7 +491,7 @@ int Wad::calcLabelOffsets () throw()
 }
 
 
-lumpTypes Wad::getCurrentType ( const Wadlumpdata & entry ) const throw()
+lumpTypes Wad::getCurrentType ( const Wadlumpdata & entry )
 {
     static lumpTypes currenttype = T_GENERAL;
 
