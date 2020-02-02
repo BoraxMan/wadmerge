@@ -30,7 +30,8 @@ const int numGroupTypes = 9; // Number of lump groupings.  This refers
 // to all the enum_lumpTypes which end with _START.
 const int lumpNameLength = 8; // The length of the lumpname in the WAD file.
 const int wadLumpBeginOffset = 12; // The length in bytes of the WAD header.
-const int mapEntries = 10; // The number of lump entries which make up a map for Doom (Hexen has one more).
+const int mapEntries = 15; // The number of lump entries which make up a map for Doom (Hexen has one more).
+const int glMapEntries = 5; // The number of lump entries for GL Nodes.
 
 int findHigherPrime ( int start )
 {
@@ -79,7 +80,12 @@ const char *maplumpnames[] = {
     "SECTORS",
     "REJECT",
     "BLOCKMAP",
-    "BEHAVIOR" // Hexen only.
+    "BEHAVIOR", // Hexen only.
+    "GL_VERT",
+    "GL_SEGS",
+    "GL_SSECT",
+    "GL_NODES",
+    "GL_PVS"
 };
 
 
@@ -206,14 +212,19 @@ int Wad::mergeWad ( Wad& wad, bool allowDuplicates ) throw()
             // If it's a map, skip the next 10 lumps, as they are duplicates too.
             if ( ( ( wad[x] ).lumpsize <= 16 ) && std::equal ( ( wad[x] ).name.begin(), ( wad[x] ).name.begin() + 3, "MAP" ) ) {
                 x += wad.wadGameType;
-                duplicatesFound += ( wad.wadGameType + 1 );
-            }
+            
             // wadGameType enum = 10 for doom2 and 11 for hexen, which coincides with the number
             // of entries we have to skip to get to the next map.  We of course, use the wadtype of the
             // wad we are merging, not THIS one.
-            else if ( ( ( wad[x] ).lumpsize <= 16 ) && ( ( wad[x] ).name[0] == 'E' ) && ( ( wad[x] ).name[2] == 'M' ) ) {
+            } else if ( ( ( wad[x] ).lumpsize <= 16 ) && ( ( wad[x] ).name[0] == 'E' ) && ( ( wad[x] ).name[2] == 'M' ) ) {
                 x += mapEntries;
                 duplicatesFound += ( mapEntries + 1 );
+            } else if ( std::equal ( ( wad[x] ).name.begin(), ( wad[x] ).name.begin() + 6, "GL_MAP" ) ) { 
+              std::cout << "GL DOOM2" << std::endl;
+                x += glMapEntries;
+            } else if ( std::equal ( ( wad[x] ).name.begin(), ( wad[x] ).name.begin() + 4, "GL_E" ) && ( ( wad[x] ).name[5] == 'M' ) )  {
+              std::cout << "GL DOOM" << std::endl;
+                x += glMapEntries;
             } else {
                 ++duplicatesFound;
             }
