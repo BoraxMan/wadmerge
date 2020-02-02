@@ -9,6 +9,7 @@ URL: http://dennisk.customer.netspace.net.au/wadmerge.html
 Distribution: Fedora
 Vendor: DK Soft
 Packager: Dennis Katsonis <dennisk@netspace.net.au>
+%global debug_package %{nil}
 
 %description
 Merges .WAD files from Doom engine games, such as
